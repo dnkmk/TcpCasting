@@ -4,5 +4,9 @@
     <Imports>
       <Import moduleName="Diagnostics" />
     </Imports>
+    <Endpoints>
+      <InternalEndpoint name="InternalEndpoint" protocol="tcp" />
+      <InputEndpoint name="InputEndpoint" protocol="tcp" port="9000" />
+    </Endpoints>
   </WorkerRole>
 </ServiceDefinition>

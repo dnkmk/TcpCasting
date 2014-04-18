@@ -12,6 +12,7 @@
     <AssemblyName>TcpCasting</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
     <Name>TcpCasting</Name>
+    <UseWebProjectPorts>False</UseWebProjectPorts>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

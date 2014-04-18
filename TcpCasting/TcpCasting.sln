@@ -7,6 +7,8 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "TcpCasting", "TcpCasting\Tc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerRole", "WorkerRole\WorkerRole.csproj", "{3DBC9B3E-F32C-4BAF-A585-E90C80757B9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{D2FD5A33-9BB9-403E-9A63-99CE1F1ED458}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3DBC9B3E-F32C-4BAF-A585-E90C80757B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DBC9B3E-F32C-4BAF-A585-E90C80757B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DBC9B3E-F32C-4BAF-A585-E90C80757B9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2FD5A33-9BB9-403E-9A63-99CE1F1ED458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2FD5A33-9BB9-403E-9A63-99CE1F1ED458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2FD5A33-9BB9-403E-9A63-99CE1F1ED458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2FD5A33-9BB9-403E-9A63-99CE1F1ED458}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
