@@ -25,104 +25,6 @@ namespace WorkerRole
 
         //static string internalEndpointKey = "InternalEndpoint";
 
-        #endregion
-
-        //This variable determines the number of 
-        //SocketAsyncEventArg objects put in the pool of objects for receive/send.
-        //The value of this variable also affects the Semaphore.
-        //This app uses a Semaphore to ensure that the max # of connections
-        //value does not get exceeded.
-        //Max # of connections to a socket can be limited by the Windows Operating System
-        //also.
-        public const Int32 maxNumberOfConnections = 3000;
-
-        //You would want a buffer size larger than 25 probably, unless you know the
-        //data will almost always be less than 25. It is just 25 in our test app.
-        public const Int32 testBufferSize = 25;
-
-        //This is the maximum number of asynchronous accept operations that can be 
-        //posted simultaneously. This determines the size of the pool of 
-        //SocketAsyncEventArgs objects that do accept operations. Note that this
-        //is NOT the same as the maximum # of connections.
-        public const Int32 maxSimultaneousAcceptOps = 10;
-
-        //The size of the queue of incoming connections for the listen socket.
-        public const Int32 backlog = 100;
-
-        //For the BufferManager
-        public const Int32 opsToPreAlloc = 2;    // 1 for receive, 1 for send
-
-        //allows excess SAEA objects in pool.
-        public const Int32 excessSaeaObjectsInPool = 1;
-
-        //This number must be the same as the value on the client.
-        //Tells what size the message prefix will be. Don't change this unless
-        //you change the code, because 4 is the length of 32 bit integer, which
-        //is what we are using as prefix.
-        public const Int32 receivePrefixLength = 4;
-        public const Int32 sendPrefixLength = 4;
-
-        public static Int32 mainTransMissionId = 10000;
-        public static Int32 mainSessionId = 1000000000;
-        public override void Run()
-        {
-
-            // Get endpoint for the listener.
-            //var endpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["InternalEndpoint"].IPEndpoint;
-
-
-            ////This object holds a lot of settings that we pass from Main method
-            ////to the SocketListener. In a real app, you might want to read
-            ////these settings from a database or windows registry settings that
-            ////you would create.
-            //SocketListenerSettings theSocketListenerSettings = new SocketListenerSettings(
-            //    maxNumberOfConnections,
-            //    excessSaeaObjectsInPool,
-            //    backlog,
-            //    maxSimultaneousAcceptOps,
-            //    receivePrefixLength,
-            //    testBufferSize,
-            //    sendPrefixLength,
-            //    opsToPreAlloc,
-            //    endpoint
-            //    );
-
-            ////instantiate the SocketListener.
-            //SocketListener socketListener = new SocketListener(theSocketListenerSettings);
-
-            //while (true)
-            //{
-            //    Thread.Sleep(10);
-            //}
-
-            var endpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["InputEndpoint"].IPEndpoint;
-            TcpListener listener = new TcpListener(endpoint);
-            listener.Start();
-
-            while (true)
-            {
-                var client = listener.AcceptTcpClient();
-                while (true)
-                {
-                    client.Client.Send(Encoding.UTF8.GetBytes("hello"));
-                    Thread.Sleep(2000);
-                }
-            }
-
-        }
-
-        public override bool OnStart()
-        {
-            // Set the maximum number of concurrent connections 
-            ServicePointManager.DefaultConnectionLimit = 12;
-
-            // For information on handling configuration changes
-            // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
-
-            return base.OnStart();
-        }
-
-        #region old code
 
         //static void StartServerListener()
         //{
@@ -294,7 +196,83 @@ namespace WorkerRole
         //    Trace.Write(msg);
         //}
 
+
         #endregion
+
+        //This variable determines the number of 
+        //SocketAsyncEventArg objects put in the pool of objects for receive/send.
+        //The value of this variable also affects the Semaphore.
+        //This app uses a Semaphore to ensure that the max # of connections
+        //value does not get exceeded.
+        //Max # of connections to a socket can be limited by the Windows Operating System
+        //also.
+        public const Int32 maxNumberOfConnections = 3000;
+
+        //You would want a buffer size larger than 25 probably, unless you know the
+        //data will almost always be less than 25. It is just 25 in our test app.
+        public const Int32 testBufferSize = 25;
+
+        //This is the maximum number of asynchronous accept operations that can be 
+        //posted simultaneously. This determines the size of the pool of 
+        //SocketAsyncEventArgs objects that do accept operations. Note that this
+        //is NOT the same as the maximum # of connections.
+        public const Int32 maxSimultaneousAcceptOps = 10;
+
+        //The size of the queue of incoming connections for the listen socket.
+        public const Int32 backlog = 100;
+
+        //For the BufferManager
+        public const Int32 opsToPreAlloc = 2;    // 1 for receive, 1 for send
+
+        //allows excess SAEA objects in pool.
+        public const Int32 excessSaeaObjectsInPool = 1;
+
+        //This number must be the same as the value on the client.
+        //Tells what size the message prefix will be. Don't change this unless
+        //you change the code, because 4 is the length of 32 bit integer, which
+        //is what we are using as prefix.
+        public const Int32 receivePrefixLength = 4;
+        public const Int32 sendPrefixLength = 4;
+
+        public static Int32 mainTransMissionId = 10000;
+        public static Int32 mainSessionId = 1000000000;
+        public override void Run()
+        {
+
+            // Get endpoint for the listener.
+            var endpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["InternalEndpoint"].IPEndpoint;
+
+            SocketListenerSettings theSocketListenerSettings = new SocketListenerSettings(
+                maxNumberOfConnections,
+                excessSaeaObjectsInPool,
+                backlog,
+                maxSimultaneousAcceptOps,
+                receivePrefixLength,
+                testBufferSize,
+                sendPrefixLength,
+                opsToPreAlloc,
+                endpoint
+                );
+
+            //instantiate the SocketListener.
+            SocketListener socketListener = new SocketListener(theSocketListenerSettings);
+
+            while (true)
+            {
+                Thread.Sleep(10);
+            }
+        }
+
+        public override bool OnStart()
+        {
+            // Set the maximum number of concurrent connections 
+            ServicePointManager.DefaultConnectionLimit = 12;
+
+            // For information on handling configuration changes
+            // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
+
+            return base.OnStart();
+        }
 
     }
 }

@@ -7,9 +7,7 @@ using System.Net;
 
 
 namespace WorkerRole
-{   //____________________________________________________________________________
-    // Implements the logic for the socket server.  
-
+{   
     class SocketListener
     {
         #region variables

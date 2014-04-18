@@ -1,95 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.IO;
 
-namespace Client
+namespace SimpleTcpClient
 {
     class Program
     {
-        //static Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        static byte[] buffer = new byte[1024 * 1024];
+
+        static TcpClient client = new TcpClient();
         static void Main(string[] args)
         {
-            // Get endpoint for the listener.
-            var endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9000);
-            TcpClient client = new TcpClient();
-            client.Connect(endpoint);
-
-            NetworkStream networkStream = client.GetStream();
-            networkStream.BeginRead(buffer,
-                  0, 1024 * 1024,
-                  HandleDatagramReceived,
-                  client);
+            
+            BeginConnectedToServer();
 
             while (true)
             {
-                var message = Console.ReadLine();
-                if (!string.IsNullOrEmpty(message))
+                string message = Console.ReadLine();
+                try
                 {
-                    client.Client.Send(Encoding.UTF8.GetBytes(client.Client.LocalEndPoint.ToString() + ":" + message));
-
+                    client.Client.Send(Encoding.UTF8.GetBytes(message));
                 }
-                Thread.Sleep(1000);
+                catch (Exception ex)
+                {
+                }
             }
 
         }
 
-        private static void HandleDatagramReceived(IAsyncResult ar)
+        static void BeginConnectedToServer()
         {
-            TcpClient client = (TcpClient)ar.AsyncState;
-            NetworkStream networkStream = client.GetStream();
+            Console.WriteLine("start to connect....");
+            client.BeginConnect(IPAddress.Parse("127.0.0.1"), 9000, EndConnectToServer, client);
+        }
 
-            int numberOfReadBytes = 0;
+        static void EndConnectToServer(IAsyncResult iar)
+        {
+
+            TcpClient client = iar.AsyncState as TcpClient;
             try
             {
-                numberOfReadBytes = networkStream.EndRead(ar);
+                client.EndConnect(iar);
+                Console.WriteLine("connected to server.");
             }
-            catch
+            catch (Exception ex)
             {
-                numberOfReadBytes = 0;
+                Console.WriteLine("fail to connect to server. Retry in 5 seconds.");
+                Thread.Sleep(5000);
+                BeginConnectedToServer();
             }
 
-            // received byte and trigger event notification
-            byte[] receivedBytes = new byte[numberOfReadBytes];
-            buffer = new byte[1024 * 1024];
-            Buffer.BlockCopy(buffer, 0, receivedBytes, 0, numberOfReadBytes);
-
-            Console.WriteLine(Encoding.UTF8.GetString(receivedBytes));
-
-            // continue listening for tcp datagram packets
-            networkStream.BeginRead(buffer, 0, buffer.Length, HandleDatagramReceived, client);
+            Thread thread = new Thread(ListenForMessage);
+            thread.IsBackground = true;
+            thread.Start(client);
         }
 
-
-        //接收服务器的消息
-        //static void ReceiveMsg()
-        //{
-        //    while (true)
-        //    {
-        //        try
-        //        {
-        //            byte[] buffer = new byte[1024 * 1024];
-        //            int n = client.Receive(buffer);
-        //            string s = Encoding.UTF8.GetString(buffer, 0, n);
-        //            ShowMsg(client.RemoteEndPoint.ToString() + ":" + s);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ShowMsg(ex.Message);
-        //            break;
-        //        }
-        //    }
-
-        //}
-
-        //static void ShowMsg(string msg)
-        //{
-        //    Console.WriteLine(msg);
-        //}
+        private static void ListenForMessage(object obj)
+        {
+            TcpClient client = obj as TcpClient;
+            Socket socket = client.Client;
+            while (true)
+            {
+                byte[] buffer = new byte[client.ReceiveBufferSize];
+                int count = socket.Receive(buffer);
+                string line = "server: " + Encoding.UTF8.GetString(buffer, 0, count);
+                Console.WriteLine(line);
+            }
+        }
     }
 }
